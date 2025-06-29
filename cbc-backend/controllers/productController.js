@@ -41,3 +41,20 @@ export function deleteProduct(req, res) {
         })
       })
 }
+
+export function getProductByName(req,res){
+  const nameNew =  req.params.name;
+
+  Product.find({name : nameNew}).then(
+    (productList) => {
+      res.json({
+        message: "Product fetched successfully",
+        list: productList
+      })
+    }
+  ).catch(() => {
+    res.json({
+      message : "Error fetching product"
+    })
+  })
+}
