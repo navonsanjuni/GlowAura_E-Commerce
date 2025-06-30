@@ -1,9 +1,13 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
-import studentRouter from './routes/studentRouter.js'; // Adjust the path as necessary
-import productRouter from './routes/productRouter.js'; // Adjust the path as necessary
-import userRouter from './routes/userRouter.js';
+
+import Student from './models/student.js'; 
+import studentRouter from './routes/studentRouter.js'; 
+import productRouter from './routes/productRouter.js';
+import userRouter from './routes/userRouter.js'; 
+
+
 
  const app = express();
  
@@ -23,6 +27,8 @@ const connection = mongoose.connection;
  app.use('/api/products', productRouter);
 
  app.use('/api/users', userRouter);
+
+ app.use('/users', userRouter); 
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
