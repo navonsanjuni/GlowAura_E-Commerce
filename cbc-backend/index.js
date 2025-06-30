@@ -1,10 +1,12 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
+
 import Student from './models/student.js'; 
 import studentRouter from './routes/studentRouter.js'; 
 import productRouter from './routes/productRouter.js';
 import userRouter from './routes/userRouter.js'; 
+
 
 
  const app = express();
@@ -20,9 +22,11 @@ const connection = mongoose.connection;
 
  app.use(bodyParser.json());
 
- app.use('/students', studentRouter); 
+ app.use('/api/students', studentRouter); 
 
- app.use('/products', productRouter);
+ app.use('/api/products', productRouter);
+
+ app.use('/api/users', userRouter);
 
  app.use('/users', userRouter); 
 
