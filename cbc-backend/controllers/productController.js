@@ -15,6 +15,15 @@ export function getProducts(req, res) {
 }
 
 export function createProduct(req, res) {
+
+  console.log(req.user);
+
+  if(req.user == null){
+    res.json({
+        message: "You are not logged in"
+    })
+    return;
+  }
     const product = new Product(req.body);
 
     product.save()
