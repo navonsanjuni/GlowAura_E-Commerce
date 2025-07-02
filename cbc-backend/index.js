@@ -37,7 +37,6 @@ const connection = mongoose.connection;
     next();
 })
 
- app.use('/api/students', studentRouter); 
 
  app.use('/api/products', productRouter);
 
