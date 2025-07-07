@@ -1,16 +1,18 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
-import studentRouter from './routes/studentRouter.js'; 
 import productRouter from './routes/productRouter.js';
 import userRouter from './routes/userRouter.js'; 
 import jwt from 'jsonwebtoken';
+import dotenv from "dotenv";
 import e from 'express';
+
+dotenv.config();
 
 
  const app = express();
  
- const mongoURL ="mongodb+srv://admin:1234@cluster0.ktnvd45.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+ const mongoURL = process.env.MONGO_DB_URI
 
  mongoose.connect(mongoURL, {});
 const connection = mongoose.connection;
@@ -27,7 +29,7 @@ const connection = mongoose.connection;
         console.log(token);
 
         if(token !=null){
-            jwt.verify(token, 'glowra-secret-key-7973', (error, decoded) => {
+            jwt.verify(token, process.env.SECRET, (error, decoded) => {
                 if(!error){
                     console.log(decoded);
                     req.user = decoded;
