@@ -1,16 +1,9 @@
 import express from 'express';
-import { get } from 'mongoose';
-import { createProduct, getProducts, deleteProduct, getProductByName } from '../controllers/productController.js';
-
+import { createProduct, getProducts } from '../controllers/productController.js';
 
 const productRouter = express.Router();
 
-productRouter.get("/", getProducts);
-
-productRouter.post("/", createProduct);
-
-productRouter.delete("/", deleteProduct);
-
-productRouter.get("/:name", getProductByName);
+productRouter.get('/', getProducts);
+productRouter.post('/', createProduct);
 
 export default productRouter;
