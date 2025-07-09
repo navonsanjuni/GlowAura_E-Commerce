@@ -9,6 +9,21 @@ export function createUser(req, res) {
     
   const newUserData = req.body;
 
+  if(newUserData.type == "admin"){
+    if(req.user == null){
+      res.json({
+        mesaage : "Please login as administrator to create an admin user"
+      })
+      return;
+    }
+    if(req.user.type != "admin"){
+      res.json({
+        message: "You are not authorized to create an admin user"
+      })
+      return;
+    } 
+  }
+
   newUserData.password = bcrypt.hashSync(newUserData.password, 10);
 
   const user = new User(newUserData);
@@ -21,6 +36,7 @@ export function createUser(req, res) {
       });
     })
     .catch(() => {
+      
       res.json({
         message: "Error creating user",
       });
@@ -64,6 +80,27 @@ export function loginUser(req, res) {
       }
     }
   });
+}
+
+export function isAdmin(req, res){
+  if(req.user == null){
+    return false;
+  }
+  if(req.user.type != "admin"){
+    return false;
+  }
+
+  return true;
+}
+
+export function isCustomer(req, res){
+  if(req.user == null){
+    return false;
+  }
+  if(req.user.type != "customer"){
+    return false ;
+  }
+  return true;
 }
 
 
