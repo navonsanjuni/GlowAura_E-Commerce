@@ -70,7 +70,15 @@ export function loginUser(req, res) {
 
        res.json({
         message: " User logged in successfully",
-        token: token
+        token: token,
+        user: {
+          email: user.email,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          isBlocked: user.isBlocked,
+          type: user.type,
+          profilePicture: user.profilePicture
+        }
        })
 
       } else {

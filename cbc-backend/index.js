@@ -1,3 +1,4 @@
+
 import bodyParser from 'body-parser';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -6,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from "dotenv";
 import productRouter from './routes/productRouter.js';
 import orderRouter from './routes/orderRouter.js';
+import cors from 'cors';
 import e from 'express';
 
 dotenv.config();
@@ -22,7 +24,14 @@ const connection = mongoose.connection;
     console.log('Connected to MongoDB');
  });
 
- app.use(bodyParser.json());
+
+// Allow CORS for frontend dev server
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
+app.use(bodyParser.json());
 
  app.use(
     (req, res, next) => {
