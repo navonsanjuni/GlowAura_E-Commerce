@@ -1,4 +1,15 @@
-// Delete product (admin only)
+import Product from "../models/product.js";
+import { isAdmin } from "./userController.js";
+
+export function getProductById(req, res) {
+    Product.findById(req.params.id)
+        .then(product => {
+            if (!product) return res.status(404).json({ message: "Product not found" });
+            res.json(product);
+        })
+        .catch(() => res.status(500).json({ message: "Error fetching product" }));
+}
+
 export function deleteProduct(req, res) {
     if (!req.user || req.user.type !== "admin") {
         return res.status(403).json({ message: "Not authorized" });
@@ -7,8 +18,6 @@ export function deleteProduct(req, res) {
         .then(() => res.json({ message: "Product deleted successfully" }))
         .catch(() => res.status(500).json({ message: "Error deleting product" }));
 }
-import Product from "../models/product.js";
-import { isAdmin } from "./userController.js";
 
 export function createProduct(req, res) {
     if(!isAdmin(req)){
@@ -19,7 +28,7 @@ export function createProduct(req, res) {
     }
 
     const newProductData = req.body;
-     const product = new Product(newProductData);
+    const product = new Product(newProductData);
     product
         .save()
         .then(() => {
