@@ -1,3 +1,12 @@
+// Get all users (admin only)
+export function getUsers(req, res) {
+  if (!req.user || req.user.type !== "admin") {
+    return res.status(403).json({ message: "Not authorized" });
+  }
+  User.find({}, "-password")
+    .then(users => res.json(users))
+    .catch(() => res.status(500).json({ message: "Error fetching users" }));
+}
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -6,22 +15,21 @@ import dotenv from "dotenv"
 dotenv.config()
 
 export function createUser(req, res) {
-    
   const newUserData = req.body;
 
-  if(newUserData.type == "admin"){
-    if(req.user == null){
+  if (newUserData.type == "admin") {
+    if (req.user == null) {
       res.json({
-        mesaage : "Please login as administrator to create an admin user"
-      })
+        message: "Please login as administrator to create an admin user"
+      });
       return;
     }
-    if(req.user.type != "admin"){
+    if (req.user.type != "admin") {
       res.json({
         message: "You are not authorized to create an admin user"
-      })
+      });
       return;
-    } 
+    }
   }
 
   newUserData.password = bcrypt.hashSync(newUserData.password, 10);
@@ -30,13 +38,29 @@ export function createUser(req, res) {
 
   user
     .save()
-    .then(() => {
+    .then((savedUser) => {
+      // Remove password from response
+      const userObj = savedUser.toObject();
+      delete userObj.password;
+      // Create token
+      const token = jwt.sign(
+        {
+          email: userObj.email,
+          firstname: userObj.firstname,
+          lastname: userObj.lastname,
+          isBlocked: userObj.isBlocked,
+          type: userObj.type,
+          profilePicture: userObj.profilePicture
+        },
+        process.env.SECRET
+      );
       res.json({
         message: "User created successfully",
+        token: token,
+        user: userObj
       });
     })
     .catch(() => {
-      
       res.json({
         message: "Error creating user",
       });
@@ -60,9 +84,9 @@ export function loginUser(req, res) {
        const token = jwt.sign(
         {
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          isblocked: user.isBlocked,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          isBlocked: user.isBlocked,
           type: user.type,
           profilePicture: user.profilePicture
         }, process.env.SECRET

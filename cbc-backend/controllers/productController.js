@@ -1,3 +1,12 @@
+// Delete product (admin only)
+export function deleteProduct(req, res) {
+    if (!req.user || req.user.type !== "admin") {
+        return res.status(403).json({ message: "Not authorized" });
+    }
+    Product.findByIdAndDelete(req.params.id)
+        .then(() => res.json({ message: "Product deleted successfully" }))
+        .catch(() => res.status(500).json({ message: "Error deleting product" }));
+}
 import Product from "../models/product.js";
 import { isAdmin } from "./userController.js";
 
