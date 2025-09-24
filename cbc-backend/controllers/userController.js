@@ -1,18 +1,17 @@
-// Get all users (admin only)
 export function getUsers(req, res) {
   if (!req.user || req.user.type !== "admin") {
     return res.status(403).json({ message: "Not authorized" });
   }
   User.find({}, "-password")
-    .then(users => res.json(users))
+    .then((users) => res.json(users))
     .catch(() => res.status(500).json({ message: "Error fetching users" }));
 }
 import User from "../models/user.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
 export function createUser(req, res) {
   const newUserData = req.body;
@@ -20,13 +19,13 @@ export function createUser(req, res) {
   if (newUserData.type == "admin") {
     if (req.user == null) {
       res.json({
-        message: "Please login as administrator to create an admin user"
+        message: "Please login as administrator to create an admin user",
       });
       return;
     }
     if (req.user.type != "admin") {
       res.json({
-        message: "You are not authorized to create an admin user"
+        message: "You are not authorized to create an admin user",
       });
       return;
     }
@@ -39,10 +38,8 @@ export function createUser(req, res) {
   user
     .save()
     .then((savedUser) => {
-      // Remove password from response
       const userObj = savedUser.toObject();
       delete userObj.password;
-      // Create token
       const token = jwt.sign(
         {
           email: userObj.email,
@@ -50,14 +47,14 @@ export function createUser(req, res) {
           lastname: userObj.lastname,
           isBlocked: userObj.isBlocked,
           type: userObj.type,
-          profilePicture: userObj.profilePicture
+          profilePicture: userObj.profilePicture,
         },
         process.env.SECRET
       );
       res.json({
         message: "User created successfully",
         token: token,
-        user: userObj
+        user: userObj,
       });
     })
     .catch(() => {
@@ -81,30 +78,30 @@ export function loginUser(req, res) {
       );
 
       if (isPasswordValid) {
-       const token = jwt.sign(
-        {
-          email: user.email,
-          firstname: user.firstname,
-          lastname: user.lastname,
-          isBlocked: user.isBlocked,
-          type: user.type,
-          profilePicture: user.profilePicture
-        }, process.env.SECRET
-       )
+        const token = jwt.sign(
+          {
+            email: user.email,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            isBlocked: user.isBlocked,
+            type: user.type,
+            profilePicture: user.profilePicture,
+          },
+          process.env.SECRET
+        );
 
-       res.json({
-        message: " User logged in successfully",
-        token: token,
-        user: {
-          email: user.email,
-          firstname: user.firstname,
-          lastname: user.lastname,
-          isBlocked: user.isBlocked,
-          type: user.type,
-          profilePicture: user.profilePicture
-        }
-       })
-
+        res.json({
+          message: " User logged in successfully",
+          token: token,
+          user: {
+            email: user.email,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            isBlocked: user.isBlocked,
+            type: user.type,
+            profilePicture: user.profilePicture,
+          },
+        });
       } else {
         res.json({
           message: "User is not loged in, Invalid password",
@@ -114,25 +111,23 @@ export function loginUser(req, res) {
   });
 }
 
-export function isAdmin(req, res){
-  if(req.user == null){
+export function isAdmin(req, res) {
+  if (req.user == null) {
     return false;
   }
-  if(req.user.type != "admin"){
+  if (req.user.type != "admin") {
     return false;
   }
 
   return true;
 }
 
-export function isCustomer(req, res){
-  if(req.user == null){
+export function isCustomer(req, res) {
+  if (req.user == null) {
     return false;
   }
-  if(req.user.type != "customer"){
-    return false ;
+  if (req.user.type != "customer") {
+    return false;
   }
   return true;
 }
-
-
