@@ -1,60 +1,55 @@
-
-import bodyParser from 'body-parser';
-import express from 'express';
-import mongoose from 'mongoose';
-import userRouter from './routes/userRouter.js'; 
-import jwt from 'jsonwebtoken';
+import bodyParser from "body-parser";
+import express from "express";
+import mongoose from "mongoose";
+import userRouter from "./routes/userRouter.js";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import productRouter from './routes/productRouter.js';
-import orderRouter from './routes/orderRouter.js';
-import cors from 'cors';
-import e from 'express';
+import productRouter from "./routes/productRouter.js";
+import orderRouter from "./routes/orderRouter.js";
+import cors from "cors";
+import e from "express";
 
 dotenv.config();
 
+const app = express();
 
- const app = express();
- 
- const mongoURL = process.env.MONGO_DB_URI
+const mongoURL = process.env.MONGO_DB_URI;
 
- mongoose.connect(mongoURL, {});
+mongoose.connect(mongoURL, {});
 const connection = mongoose.connection;
 
- connection.once('open', () => {
-    console.log('Connected to MongoDB');
- });
+connection.once("open", () => {
+  console.log("Connected to MongoDB");
+});
 
-
-// Allow CORS for frontend dev server
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(bodyParser.json());
 
- app.use(
-    (req, res, next) => {
-        const token = req.header('Authorization')?.replace('Bearer ', '')
-        console.log(token);
+app.use((req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
+  console.log(token);
 
-        if(token !=null){
-            jwt.verify(token, process.env.SECRET, (error, decoded) => {
-                if(!error){
-                    console.log(decoded);
-                    req.user = decoded;
-                }
-        })
-    }
-    next();
-})
+  if (token != null) {
+    jwt.verify(token, process.env.SECRET, (error, decoded) => {
+      if (!error) {
+        console.log(decoded);
+        req.user = decoded;
+      }
+    });
+  }
+  next();
+});
 
-
-
- app.use('/api/users', userRouter);
- app.use('/api/products', productRouter);
-app.use('/api/orders', orderRouter);
+app.use("/api/users", userRouter);
+app.use("/api/products", productRouter);
+app.use("/api/orders", orderRouter);
 
 app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+  console.log("Server is running on port 3000");
 });
